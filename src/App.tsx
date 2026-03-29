@@ -336,9 +336,10 @@ function ConfigPanel({ lang, config, updateConfig, resultModes, showIconPicker, 
                 <p className="text-xs text-text-muted">{mode.desc}</p>
               </button>
               <video
+                ref={el => { if (el) { if (config.resultMode === mode.value) { el.play() } else { el.pause() } } }}
                 src={mode.video}
-                autoPlay loop muted playsInline
-                className={`w-full rounded-lg border transition-all ${config.resultMode === mode.value ? 'border-border-focus shadow-lg' : 'border-border opacity-60 hover:opacity-100'}`}
+                autoPlay={config.resultMode === mode.value} loop muted playsInline
+                className={`w-full rounded-lg border transition-all duration-300 ${config.resultMode === mode.value ? 'border-border-focus shadow-lg opacity-100' : 'border-border opacity-25'}`}
               />
             </div>
           ))}

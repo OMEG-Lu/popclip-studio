@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@theme {
+  /* Light theme (default) */
+  --color-bg: #f8f9fb;
+  --color-bg-card: #ffffff;
+  --color-bg-input: #f0f1f5;
+  --color-bg-hover: #e8e9ef;
+  --color-border: #d8dae0;
+  --color-border-focus: #6366f1;
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #4a4a6a;
+  --color-text-muted: #8888a0;
+  --color-accent: #6366f1;
+  --color-accent-hover: #5558e6;
+  --color-accent-glow: rgba(99, 102, 241, 0.12);
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Dark theme overrides */
+.dark {
+  --color-bg: #0a0a0f;
+  --color-bg-card: #12121a;
+  --color-bg-input: #1a1a25;
+  --color-bg-hover: #22222f;
+  --color-border: #2a2a3a;
+  --color-border-focus: #6366f1;
+  --color-text-primary: #f0f0f5;
+  --color-text-secondary: #8888a0;
+  --color-text-muted: #555568;
+  --color-accent: #818cf8;
+  --color-accent-hover: #a5b4fc;
+  --color-accent-glow: rgba(99, 102, 241, 0.15);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+textarea:focus, input:focus, select:focus {
+  outline: none;
+}

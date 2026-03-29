@@ -176,7 +176,7 @@ function App() {
         </nav>
 
         <main className="flex-1 p-8 overflow-y-auto">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             {activeTab === 'config' && (
               <ConfigPanel lang={lang} config={config} updateConfig={updateConfig} resultModes={resultModes}
                 showIconPicker={showIconPicker} setShowIconPicker={setShowIconPicker}

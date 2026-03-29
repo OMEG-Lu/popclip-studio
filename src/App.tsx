@@ -126,10 +126,10 @@ function App() {
     return Icon ? <Icon size={20} /> : <Wand2 size={20} />
   }
 
-  const resultModes: { value: ResultMode; label: string; icon: React.ReactNode; desc: string }[] = [
-    { value: 'replace', label: t('config.resultMode.replace', lang), icon: <Replace size={16} />, desc: t('config.resultMode.replace.desc', lang) },
-    { value: 'preview', label: t('config.resultMode.preview', lang), icon: <Eye size={16} />, desc: t('config.resultMode.preview.desc', lang) },
-    { value: 'both', label: t('config.resultMode.both', lang), icon: <Layers size={16} />, desc: t('config.resultMode.both.desc', lang) },
+  const resultModes: { value: ResultMode; label: string; icon: React.ReactNode; desc: string; video: string }[] = [
+    { value: 'replace', label: t('config.resultMode.replace', lang), icon: <Replace size={16} />, desc: t('config.resultMode.replace.desc', lang), video: `${import.meta.env.BASE_URL}demos/replace.mp4` },
+    { value: 'preview', label: t('config.resultMode.preview', lang), icon: <Eye size={16} />, desc: t('config.resultMode.preview.desc', lang), video: `${import.meta.env.BASE_URL}demos/preview.mp4` },
+    { value: 'both', label: t('config.resultMode.both', lang), icon: <Layers size={16} />, desc: t('config.resultMode.both.desc', lang), video: `${import.meta.env.BASE_URL}demos/both.mp4` },
   ]
 
   return (
@@ -217,7 +217,7 @@ function Label({ children }: { children: React.ReactNode }) {
 
 interface ConfigPanelProps {
   lang: Lang; config: ExtensionConfig; updateConfig: (p: Partial<ExtensionConfig>) => void
-  resultModes: { value: ResultMode; label: string; icon: React.ReactNode; desc: string }[]
+  resultModes: { value: ResultMode; label: string; icon: React.ReactNode; desc: string; video: string }[]
   showIconPicker: boolean; setShowIconPicker: (v: boolean) => void
   selectedIconPreset: typeof ICON_PRESETS[number] | undefined; LucideIcon: (name: string) => React.ReactNode
   availableModels: ModelInfo[]; fetchingModels: boolean; showModelDropdown: boolean
@@ -327,13 +327,20 @@ function ConfigPanel({ lang, config, updateConfig, resultModes, showIconPicker, 
         <SectionTitle>{t('config.resultMode', lang)}</SectionTitle>
         <div className="grid grid-cols-3 gap-3">
           {resultModes.map(mode => (
-            <button key={mode.value} onClick={() => updateConfig({ resultMode: mode.value })}
-              className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${config.resultMode === mode.value ? 'border-border-focus bg-accent/10' : 'border-border bg-bg-input hover:bg-bg-hover'}`}>
-              <div className={`flex items-center gap-2 mb-1 ${config.resultMode === mode.value ? 'text-accent' : 'text-text-secondary'}`}>
-                {mode.icon}<span className="text-sm font-medium">{mode.label}</span>
-              </div>
-              <p className="text-xs text-text-muted">{mode.desc}</p>
-            </button>
+            <div key={mode.value} className="flex flex-col gap-2">
+              <button onClick={() => updateConfig({ resultMode: mode.value })}
+                className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${config.resultMode === mode.value ? 'border-border-focus bg-accent/10' : 'border-border bg-bg-input hover:bg-bg-hover'}`}>
+                <div className={`flex items-center gap-2 mb-1 ${config.resultMode === mode.value ? 'text-accent' : 'text-text-secondary'}`}>
+                  {mode.icon}<span className="text-sm font-medium">{mode.label}</span>
+                </div>
+                <p className="text-xs text-text-muted">{mode.desc}</p>
+              </button>
+              <video
+                src={mode.video}
+                autoPlay loop muted playsInline
+                className={`w-full rounded-lg border transition-all ${config.resultMode === mode.value ? 'border-border-focus shadow-lg' : 'border-border opacity-60 hover:opacity-100'}`}
+              />
+            </div>
           ))}
         </div>
       </section>

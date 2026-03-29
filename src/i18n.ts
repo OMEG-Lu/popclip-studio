@@ -81,7 +81,7 @@ const translations = {
 type Key = keyof typeof translations
 
 export function t(key: Key, lang: Lang, vars?: Record<string, string>): string {
-  const val = translations[key]?.[lang] ?? translations[key]?.['en'] ?? key
+  const val: string = translations[key]?.[lang] ?? translations[key]?.['en'] ?? key
   if (!vars) return val
-  return Object.entries(vars).reduce((s, [k, v]) => s.replace(`{${k}}`, v), val)
+  return Object.entries(vars).reduce<string>((s, [k, v]) => s.replace(`{${k}}`, v), val)
 }

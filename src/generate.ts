@@ -4,90 +4,54 @@ import type { ExtensionConfig } from './types'
 import { DEFAULT_MODELS } from './types'
 
 function generateConfigYaml(config: ExtensionConfig): string {
-  const modelDesc = `Model name (leave blank for default: ${DEFAULT_MODELS[config.provider]})`
   const lines = [
     `name: ${config.name}`,
     `icon: ${config.icon}`,
     `identifier: ${config.identifier}`,
     `popclipVersion: 4615`,
     `options:`,
-    `  - identifier: provider`,
-    `    label: AI Provider`,
-    `    type: multiple`,
-    `    values:`,
-    `      - OpenAI`,
-    `      - Anthropic`,
-    `      - Gemini`,
-    `      - OpenRouter`,
-    `      - Custom`,
-    `    default: ${config.provider}`,
     `  - identifier: apikey`,
     `    label: API Key`,
     `    type: secret`,
-    `    description: API key for your chosen provider (leave blank for local models)`,
-    `  - identifier: model`,
-    `    label: Model`,
-    `    type: string`,
-    `    description: "${modelDesc}"`,
-    `  - identifier: customendpoint`,
-    `    label: Custom API Endpoint`,
-    `    type: string`,
-    `    description: "For Custom provider only (e.g. http://localhost:11434/v1/chat/completions)"`,
-    `  - identifier: mode`,
-    `    label: Action Mode`,
-    `    type: multiple`,
-    `    values:`,
-    `      - replace`,
-    `      - preview`,
-    `      - both`,
-    `    default: ${config.resultMode}`,
-    `actions:`,
+    `    description: "API key for ${config.provider}${config.provider === 'Custom' ? ' (leave blank for local models)' : ''}"`,
   ]
 
+  // Custom provider needs endpoint option
+  if (config.provider === 'Custom') {
+    lines.push(
+      `  - identifier: customendpoint`,
+      `    label: API Endpoint`,
+      `    type: string`,
+      `    description: "OpenAI-compatible endpoint"`,
+      config.customEndpoint
+        ? `    default value: "${config.customEndpoint}"`
+        : `    description: "e.g. http://localhost:11434/v1/chat/completions"`,
+    )
+  }
+
+  lines.push(`actions:`)
+
   const title = config.name
-  const iconTag = config.icon.startsWith('symbol:')
-    ? config.icon
-    : config.icon
-
-  if (config.resultMode === 'preview' || config.resultMode === 'both') {
-    lines.push(
-      `  - title: ${title}`,
-      `    icon: ${iconTag}`,
-      `    requirements: [text, option-mode=${config.resultMode === 'both' ? 'preview' : 'preview'}]`,
-      `    shell script file: preview.sh`,
-      `    interpreter: /bin/bash`,
-    )
-  }
-
-  if (config.resultMode === 'both') {
-    lines.push(
-      `  - title: ${title} (Preview)`,
-      `    icon: iconify:lucide:eye`,
-      `    requirements: [text, option-mode=both]`,
-      `    shell script file: preview.sh`,
-      `    interpreter: /bin/bash`,
-    )
-  }
+  const icon = config.icon
 
   if (config.resultMode === 'replace' || config.resultMode === 'both') {
     lines.push(
       `  - title: ${title}`,
-      `    icon: ${iconTag}`,
-      `    requirements: [text, option-mode=${config.resultMode === 'both' ? 'replace' : 'replace'}]`,
+      `    icon: ${icon}`,
+      `    requirements: [text]`,
       `    shell script file: script.sh`,
       `    interpreter: /bin/bash`,
       `    after: paste-result`,
     )
   }
 
-  if (config.resultMode === 'both') {
+  if (config.resultMode === 'preview' || config.resultMode === 'both') {
     lines.push(
-      `  - title: ${title} (Replace)`,
-      `    icon: ${iconTag}`,
-      `    requirements: [text, option-mode=both]`,
-      `    shell script file: script.sh`,
+      `  - title: ${config.resultMode === 'both' ? title + ' (Preview)' : title}`,
+      `    icon: ${config.resultMode === 'both' ? 'iconify:lucide:eye' : icon}`,
+      `    requirements: [text]`,
+      `    shell script file: preview.sh`,
       `    interpreter: /bin/bash`,
-      `    after: paste-result`,
     )
   }
 
@@ -96,15 +60,17 @@ function generateConfigYaml(config: ExtensionConfig): string {
 
 function generateScript(config: ExtensionConfig): string {
   const escapedPrompt = config.systemPrompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')
+  const model = config.model || DEFAULT_MODELS[config.provider]
+
   return `#!/bin/bash
 python3 <<'PYEOF'
 import json, urllib.request, os, sys
 
 text = os.environ.get("POPCLIP_TEXT", "")
 api_key = os.environ.get("POPCLIP_OPTION_APIKEY", "")
-provider = os.environ.get("POPCLIP_OPTION_PROVIDER", "${config.provider}")
-model = os.environ.get("POPCLIP_OPTION_MODEL", "").strip()
-custom_endpoint = os.environ.get("POPCLIP_OPTION_CUSTOMENDPOINT", "").strip()
+provider = "${config.provider}"
+model = "${model}"
+custom_endpoint = os.environ.get("POPCLIP_OPTION_CUSTOMENDPOINT", "${config.customEndpoint}").strip()
 
 if not api_key and provider not in ("Custom",):
     sys.exit(1)
@@ -112,17 +78,6 @@ if not api_key and provider not in ("Custom",):
 system_prompt = (
     "${escapedPrompt}"
 )
-
-DEFAULTS = {
-    "OpenAI": "gpt-4o-mini",
-    "Anthropic": "claude-sonnet-4-20250514",
-    "Gemini": "gemini-2.0-flash",
-    "OpenRouter": "openai/gpt-4o-mini",
-    "Custom": "llama3",
-}
-
-if not model:
-    model = DEFAULTS.get(provider, "gpt-4o-mini")
 
 def call_openai_compatible(url, headers, model, system_prompt, text):
     payload = json.dumps({
@@ -214,9 +169,7 @@ PYEOF
 }
 
 function generatePreviewScript(config: ExtensionConfig): string {
-  // Same as script but with popclip-show-result behavior
-  const base = generateScript(config)
-  return base
+  return generateScript(config)
 }
 
 export async function exportExtension(config: ExtensionConfig) {

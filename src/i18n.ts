@@ -7,8 +7,7 @@ const translations = {
   'app.export': { en: 'Export .popclipext', zh: '导出 .popclipext' },
 
   // Nav
-  'nav.config': { en: 'Configuration', zh: '配置' },
-  'nav.prompt': { en: 'Prompt', zh: '提示词' },
+  'nav.build': { en: 'Build', zh: '构建' },
   'nav.test': { en: 'Live Test', zh: '在线测试' },
 
   // Status
@@ -42,7 +41,7 @@ const translations = {
   'config.resultMode.both': { en: 'Both', zh: '两者皆有' },
   'config.resultMode.both.desc': { en: 'Both actions available', zh: '两种操作都可用' },
 
-  // Prompt
+  // Prompt (now part of Build tab)
   'prompt.templates': { en: 'Quick Templates', zh: '快速模板' },
   'prompt.system': { en: 'System Prompt', zh: '系统提示词' },
   'prompt.placeholder': { en: 'Describe what this extension should do with the selected text...', zh: '描述这个扩展应该对选中的文本做什么...' },
@@ -71,7 +70,10 @@ const translations = {
   'test.run': { en: 'Run Test', zh: '运行测试' },
   'test.running': { en: 'Processing...', zh: '处理中...' },
   'test.output': { en: 'Output', zh: '输出结果' },
-  'test.needPrompt': { en: 'Set up a system prompt in the Prompt tab first', zh: '请先在"提示词"标签页设置系统提示词' },
+  'test.needPrompt': { en: 'Set up a system prompt in the Build tab first', zh: '请先在"构建"页面设置系统提示词' },
+
+  // Export info
+  'export.info': { en: 'The exported extension includes your provider, model, and prompt settings. After installing, users only need to enter their API key in PopClip settings.', zh: '导出的扩展包含你的服务商、模型和提示词设置。安装后，用户只需在 PopClip 设置中输入 API Key 即可使用。' },
 
   // Theme
   'theme.light': { en: 'Switch to light mode', zh: '切换为亮色模式' },
